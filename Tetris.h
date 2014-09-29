@@ -47,6 +47,8 @@ private:
 	//time for pushPlayerBlock func
 	sf::Time mElapsedTime;
 	sf::Text mNextText;
+	sf::Text mHighScoreTxt;
+	int mRealScore;
 	sf::RenderWindow& mWindow;
 	sf::RectangleShape mVisualBorder;
 	sf::RectangleShape mTrackerRect;

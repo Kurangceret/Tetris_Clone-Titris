@@ -19,7 +19,9 @@ mTrackerBlock(nullptr),
 mNextBlock(nullptr),
 mUpdateTracker(true),
 mArea(),
-mNextArea()
+mNextArea(),
+mRealScore(0),
+mHighScoreTxt()
 {
 	loadTextures();
 
@@ -44,6 +46,11 @@ mNextArea()
 	centerOrigin(mNextText);
 	mNextText.setPosition(mNextArea.left + mNextArea.width / 2, mNextArea.top - 15.f);
 
+	mHighScoreTxt.setString(std::string("High Score : " + std::to_string(mRealScore)));
+	mHighScoreTxt.setFont(font);
+	mHighScoreTxt.setCharacterSize(12);
+	centerOrigin(mHighScoreTxt);
+	mHighScoreTxt.setPosition(mNextText.getPosition() + sf::Vector2f(-30.f, 150.f));
 	
 
 	PlayerBlock::Ptr playerBlocks(new PlayerBlock(intToType(randomInt(7)), mTextures, mArea, false));
@@ -81,6 +88,7 @@ void Tetris::draw()
 	mWindow.draw(mVisualBorder);
 	mWindow.draw(mTrackerRect);
 	mWindow.draw(mNextText);
+	mWindow.draw(mHighScoreTxt);
 
 	if (mNextBlock)
 		mNextBlock->draw(mWindow);
@@ -93,6 +101,7 @@ void Tetris::draw()
 
 	for (Entity::Ptr& block : mAllBlocks)
 		mWindow.draw(*block);
+
 }
 
 void Tetris::update(sf::Time dt)
@@ -104,6 +113,8 @@ void Tetris::update(sf::Time dt)
 	}
 	if (mTrackerBlock)
 		mTrackerBlock->update(dt);
+
+	mHighScoreTxt.setString(std::string("High Score : " + std::to_string(mRealScore)));
 
 	adaptPlayerBlocks();
 	trackPlayerBlock(dt);
@@ -324,9 +335,9 @@ void Tetris::freeSpaces(std::vector<float>& checkers)
 
 	typedef std::vector<Entity::Ptr>::iterator iter;
 	
-		
+	int countScore = 0;
 	for (float y : checkers){
-		
+		countScore++;
 		for (iter start = mAllBlocks.begin(); start != mAllBlocks.end();){
 			if (start->get()->getPosition().y == y)
 				start = mAllBlocks.erase(start);
@@ -335,6 +346,7 @@ void Tetris::freeSpaces(std::vector<float>& checkers)
 		}
 	}
 
+	mRealScore += countScore * perLine;
 
 	sf::Vector2f movement = sf::Vector2f(0.f, 32.f);
 	std::size_t c;
